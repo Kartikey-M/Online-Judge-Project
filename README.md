@@ -1,6 +1,5 @@
-# Online Judge Platform
-
-A Django-based online judge platform for competitive programming practice and contests.
+# Online-Judge-Project
+Python Django Based project
 
 ## Features
 
