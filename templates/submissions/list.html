@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Submissions - Online Judge{% endblock %}
+
+{% block extra_css %}
+<style>
+    .submissions-header {
+        background: #21262d;
+        color: #f0f6fc;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        border: 1px solid #30363d;
+    }
+    
+    .submission-card {
+        background: #21262d;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        border-left: 4px solid #30363d;
+        border: 1px solid #30363d;
+        color: #f0f6fc;
+    }
+    
+    .submission-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        background: #30363d;
+    }
+    
+    .submission-card.accepted {
+        border-left-color: #28a745;
+    }
+    
+    .submission-card.wrong-answer {
+        border-left-color: #dc3545;
+    }
+    
+    .submission-card.time-limit {
+        border-left-color: #fd7e14;
+    }
+    
+    .submission-card.pending {
+        border-left-color: #ffc107;
+    }
+    
+    .verdict-badge {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    .verdict-AC { background-color: #28a745; color: white; }
+    .verdict-WA { background-color: #dc3545; color: white; }
+    .verdict-TLE { background-color: #fd7e14; color: white; }
+    .verdict-MLE { background-color: #6610f2; color: white; }
+    .verdict-CE { background-color: #6c757d; color: white; }
+    .verdict-RE { background-color: #e83e8c; color: white; }
+    .verdict-PE { background-color: #ffc107; color: black; }
+    .verdict-PENDING { background-color: #17a2b8; color: white; }
+    
+    .language-badge {
+        background: #30363d;
+        color: #f0f6fc;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-weight: 500;
+        border: 1px solid #21262d;
+    }
+    
+    .filter-section {
+        background: #21262d;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        border: 1px solid #30363d;
+        color: #f0f6fc;
+    }
+    
+    .stats-mini {
+        background: #30363d;
+        color: #f0f6fc;
+        padding: 1rem;
+        border-radius: 10px;
+        text-align: center;
+        margin-bottom: 1rem;
+        border: 1px solid #21262d;
+    }
+    
+    .no-submissions {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #6c757d;
+    }
+    
+    .problem-link {
+        color: #58a6ff;
+        text-decoration: none;
+        font-weight: 600;
+    }
+    
+    .problem-link:hover {
+        color: #79c0ff;
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="submissions-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 mb-0">
+                    <i class="fas fa-code"></i>
+                    My Submissions
+                </h1>
+                <p class="lead mb-0 mt-2 opacity-75">
+                    Track your progress and review your solutions
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div class="stats-mini">
+                    <h4 class="mb-1">{{ submissions.count }}</h4>
+                    <small>Total Submissions</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="filter-section">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label for="problem" class="form-label">Problem</label>
+                <input type="text" class="form-control" id="problem" name="problem" 
+                       placeholder="Search problems..." value="{{ request.GET.problem }}">
+            </div>
+            <div class="col-md-2">
+                <label for="language" class="form-label">Language</label>
+                <select class="form-select" id="language" name="language">
+                    <option value="">All Languages</option>
+                    <option value="python" {% if request.GET.language == 'python' %}selected{% endif %}>Python</option>
+                    <option value="cpp" {% if request.GET.language == 'cpp' %}selected{% endif %}>C++</option>
+                    <option value="c" {% if request.GET.language == 'c' %}selected{% endif %}>C</option>
+                    <option value="java" {% if request.GET.language == 'java' %}selected{% endif %}>Java</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="verdict" class="form-label">Verdict</label>
+                <select class="form-select" id="verdict" name="verdict">
+                    <option value="">All Verdicts</option>
+                    <option value="AC" {% if request.GET.verdict == 'AC' %}selected{% endif %}>Accepted</option>
+                    <option value="WA" {% if request.GET.verdict == 'WA' %}selected{% endif %}>Wrong Answer</option>
+                    <option value="TLE" {% if request.GET.verdict == 'TLE' %}selected{% endif %}>Time Limit</option>
+                    <option value="CE" {% if request.GET.verdict == 'CE' %}selected{% endif %}>Compile Error</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="date_from" class="form-label">Date From</label>
+                <input type="date" class="form-control" id="date_from" name="date_from" value="{{ request.GET.date_from }}">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <div>
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                    <a href="{% url 'submissions:list' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-times"></i> Clear
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Submissions List -->
+    {% if submissions %}
+        <div class="row">
+            {% for submission in submissions %}
+            <div class="col-12">
+                <div class="submission-card 
+                    {% if submission.verdict == 'AC' %}accepted
+                    {% elif submission.verdict == 'WA' %}wrong-answer
+                    {% elif submission.verdict == 'TLE' %}time-limit
+                    {% elif submission.verdict == 'PENDING' %}pending
+                    {% endif %}">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-md-4">
+                                <h6 class="card-title mb-1">
+                                    <a href="{% url 'problems:detail' submission.problem.slug %}" class="problem-link">
+                                        {{ submission.problem.title }}
+                                    </a>
+                                </h6>
+                                <div class="d-flex align-items-center">
+                                    <span class="language-badge me-2">{{ submission.language|upper }}</span>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock"></i>
+                                        {{ submission.submitted_at|date:"M d, Y H:i" }}
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-2 text-center">
+                                <span class="verdict-badge verdict-{{ submission.verdict }}">
+                                    {{ submission.get_verdict_display }}
+                                </span>
+                            </div>
+                            
+                            <div class="col-md-2 text-center">
+                                {% if submission.execution_time %}
+                                    <div class="text-muted">
+                                        <i class="fas fa-stopwatch"></i>
+                                        {{ submission.execution_time|floatformat:0 }}ms
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-2 text-center">
+                                {% if submission.memory_used %}
+                                    <div class="text-muted">
+                                        <i class="fas fa-memory"></i>
+                                        {{ submission.memory_used|floatformat:0 }}KB
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-2 text-end">
+                                <a href="{% url 'submissions:detail' submission.id %}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-eye"></i>
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                        
+                        {% if submission.verdict != 'AC' and submission.error_message %}
+                        <div class="mt-2">
+                            <small class="text-danger">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {{ submission.error_message|truncatechars:100 }}
+                            </small>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav aria-label="Submissions pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1{% if request.GET.problem %}&problem={{ request.GET.problem }}{% endif %}{% if request.GET.language %}&language={{ request.GET.language }}{% endif %}{% if request.GET.verdict %}&verdict={{ request.GET.verdict }}{% endif %}">
+                            <i class="fas fa-angle-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.problem %}&problem={{ request.GET.problem }}{% endif %}{% if request.GET.language %}&language={{ request.GET.language }}{% endif %}{% if request.GET.verdict %}&verdict={{ request.GET.verdict }}{% endif %}">
+                            <i class="fas fa-angle-left"></i>
+                        </a>
+                    </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">
+                        {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                    </span>
+                </li>
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.problem %}&problem={{ request.GET.problem }}{% endif %}{% if request.GET.language %}&language={{ request.GET.language }}{% endif %}{% if request.GET.verdict %}&verdict={{ request.GET.verdict }}{% endif %}">
+                            <i class="fas fa-angle-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.problem %}&problem={{ request.GET.problem }}{% endif %}{% if request.GET.language %}&language={{ request.GET.language }}{% endif %}{% if request.GET.verdict %}&verdict={{ request.GET.verdict }}{% endif %}">
+                            <i class="fas fa-angle-double-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        
+    {% else %}
+        <div class="no-submissions">
+            <i class="fas fa-code fa-4x mb-4"></i>
+            <h3>No submissions found</h3>
+            <p class="lead">You haven't submitted any solutions yet.</p>
+            <a href="{% url 'problems:list' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-puzzle-piece"></i>
+                Start Solving Problems
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add loading animation to filter form
+        const filterForm = document.querySelector('form');
+        if (filterForm) {
+            filterForm.addEventListener('submit', function() {
+                const submitBtn = this.querySelector('button[type="submit"]');
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Filtering...';
+                submitBtn.disabled = true;
+            });
+        }
+        
+        // Auto-refresh pending submissions
+        const pendingSubmissions = document.querySelectorAll('.submission-card.pending');
+        if (pendingSubmissions.length > 0) {
+            setTimeout(() => {
+                location.reload();
+            }, 5000); // Refresh every 5 seconds if there are pending submissions
+        }
+    });
+</script>
+{% endblock %}

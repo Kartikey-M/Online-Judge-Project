@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}Problems - Online Judge{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fas fa-puzzle-piece"></i> Problems</h2>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="search" class="form-label">Search</label>
+                <input type="text" class="form-control" id="search" name="search" value="{{ search_query }}" placeholder="Search problems...">
+            </div>
+            <div class="col-md-3">
+                <label for="difficulty" class="form-label">Difficulty</label>
+                <select class="form-select" id="difficulty" name="difficulty">
+                    <option value="">All Difficulties</option>
+                    {% for value, label in difficulty_choices %}
+                        <option value="{{ value }}" {% if difficulty == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Filter
+                </button>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <a href="{% url 'problems:list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-times"></i> Clear
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Problems List -->
+<div class="card">
+    <div class="card-body">
+        {% if page_obj %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Problem</th>
+                            <th>Difficulty</th>
+                            <th>Time Limit</th>
+                            <th>Memory Limit</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for problem in page_obj %}
+                            <tr>
+                                <td>
+                                    <h6 class="mb-1">
+                                        <a href="{{ problem.get_absolute_url }}" class="text-decoration-none">
+                                            {{ problem.title }}
+                                        </a>
+                                    </h6>
+                                    <p class="mb-0 text-muted small">{{ problem.description|truncatewords:15 }}</p>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{% if problem.difficulty == 'easy' %}success{% elif problem.difficulty == 'medium' %}warning{% else %}danger{% endif %}">
+                                        {{ problem.get_difficulty_display }}
+                                    </span>
+                                </td>
+                                <td>{{ problem.time_limit }}ms</td>
+                                <td>{{ problem.memory_limit }}MB</td>
+                                <td>
+                                    <a href="{{ problem.get_absolute_url }}" class="btn btn-sm btn-primary">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+                <nav aria-label="Problems pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if difficulty %}&difficulty={{ difficulty }}{% endif %}">First</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if difficulty %}&difficulty={{ difficulty }}{% endif %}">Previous</a>
+                            </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if difficulty %}&difficulty={{ difficulty }}{% endif %}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if difficulty %}&difficulty={{ difficulty }}{% endif %}">Next</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if difficulty %}&difficulty={{ difficulty }}{% endif %}">Last</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="text-center">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <p class="text-muted">No problems found matching your criteria.</p>
+                <a href="{% url 'problems:list' %}" class="btn btn-outline-primary">View All Problems</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Online Judge{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stats-card {
+        background: #21262d;
+        border-radius: 15px;
+        color: #f0f6fc;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        transition: transform 0.3s ease;
+        border: 1px solid #30363d;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .stats-number {
+        font-size: 3rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stats-label {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+    
+    .recent-activity {
+        background: #21262d;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        margin-bottom: 1.5rem;
+        border: 1px solid #30363d;
+        color: #f0f6fc;
+    }
+    
+    .activity-item {
+        padding: 1rem;
+        border-left: 4px solid #007bff;
+        margin-bottom: 1rem;
+        background: #161b22;
+        border-radius: 0 10px 10px 0;
+        color: #f0f6fc;
+    }
+    
+    .activity-item.success {
+        border-left-color: #28a745;
+    }
+    
+    .activity-item.warning {
+        border-left-color: #ffc107;
+    }
+    
+    .activity-item.danger {
+        border-left-color: #dc3545;
+    }
+    
+    .problem-difficulty.easy {
+        background: #28a745;
+    }
+    
+    .problem-difficulty.medium {
+        background: #ffc107;
+    }
+    
+    .problem-difficulty.hard {
+        background: #dc3545;
+    }
+    
+    .quick-action {
+        background: #21262d;
+        border: 1px solid #30363d;
+        border-radius: 10px;
+        color: #f0f6fc;
+        padding: 1rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin: 0.5rem;
+    }
+    
+    .quick-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+        color: #f0f6fc;
+        text-decoration: none;
+        background: #30363d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-4 mb-4">
+                <i class="fas fa-tachometer-alt"></i>
+                Welcome back, {{ user.first_name|default:user.username }}!
+            </h1>
+        </div>
+    </div>
+    
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ user.problems_solved }}</div>
+                <div class="stats-label">
+                    <i class="fas fa-check-circle"></i>
+                    Problems Solved
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ user.total_submissions }}</div>
+                <div class="stats-label">
+                    <i class="fas fa-code"></i>
+                    Total Submissions
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ acceptance_rate|floatformat:1 }}%</div>
+                <div class="stats-label">
+                    <i class="fas fa-percentage"></i>
+                    Acceptance Rate
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card">
+                <div class="stats-number">{{ current_streak }}</div>
+                <div class="stats-label">
+                    <i class="fas fa-fire"></i>
+                    Current Streak
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Recent Activity -->
+        <div class="col-lg-8">
+            <div class="recent-activity">
+                <h3 class="mb-3">
+                    <i class="fas fa-history text-primary"></i>
+                    Recent Activity
+                </h3>
+                
+                {% if recent_submissions %}
+                    {% for submission in recent_submissions %}
+                    <div class="activity-item {% if submission.verdict == 'AC' %}success{% elif submission.verdict == 'WA' %}danger{% else %}warning{% endif %}">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">
+                                    <a href="{% url 'problems:detail' submission.problem.slug %}" class="text-decoration-none">
+                                        {{ submission.problem.title }}
+                                    </a>
+                                </h6>
+                                <p class="mb-1">
+                                    <span class="badge bg-secondary">{{ submission.language }}</span>
+                                    <span class="badge verdict-{{ submission.verdict }}">{{ submission.get_verdict_display }}</span>
+                                    {% if submission.score %}
+                                        <span class="badge bg-info">{{ submission.score }}/{{ submission.total_score }}</span>
+                                    {% endif %}
+                                </p>
+                                <small class="text-muted">
+                                    <i class="fas fa-clock"></i>
+                                    {{ submission.submitted_at|timesince }} ago
+                                </small>
+                            </div>
+                            <div>
+                                <a href="{% url 'submissions:detail' submission.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                    View
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="text-center mt-3">
+                        <a href="{% url 'submissions:list' %}" class="btn btn-primary">
+                            <i class="fas fa-list"></i>
+                            View All Submissions
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-code fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No submissions yet</h5>
+                        <p class="text-muted">Start solving problems to see your activity here!</p>
+                        <a href="{% url 'problems:list' %}" class="btn btn-primary">
+                            <i class="fas fa-puzzle-piece"></i>
+                            Browse Problems
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Quick Actions & Recommended Problems -->
+        <div class="col-lg-4">
+            <!-- Quick Actions -->
+            <div class="recent-activity">
+                <h3 class="mb-3">
+                    <i class="fas fa-bolt text-warning"></i>
+                    Quick Actions
+                </h3>
+                
+                <div class="text-center">
+                    <a href="{% url 'problems:list' %}" class="quick-action">
+                        <i class="fas fa-puzzle-piece"></i>
+                        Browse Problems
+                    </a>
+                    <a href="{% url 'submissions:list' %}" class="quick-action">
+                        <i class="fas fa-list"></i>
+                        My Submissions
+                    </a>
+                    <a href="{% url 'accounts:profile' %}" class="quick-action">
+                        <i class="fas fa-user"></i>
+                        Edit Profile
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Recommended Problems -->
+            <div class="recent-activity">
+                <h3 class="mb-3">
+                    <i class="fas fa-star text-success"></i>
+                    Recommended Problems
+                </h3>
+                
+                {% if recommended_problems %}
+                    {% for problem in recommended_problems %}
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <div>
+                            <h6 class="mb-1">
+                                <a href="{% url 'problems:detail' problem.slug %}" class="text-decoration-none">
+                                    {{ problem.title }}
+                                </a>
+                            </h6>
+                            <small class="text-muted">
+                                <span class="badge problem-difficulty {{ problem.difficulty }}">
+                                    {{ problem.get_difficulty_display }}
+                                </span>
+                                <i class="fas fa-clock"></i> {{ problem.time_limit }}ms
+                                <i class="fas fa-memory"></i> {{ problem.memory_limit }}MB
+                            </small>
+                        </div>
+                        <a href="{% url 'problems:detail' problem.slug %}" class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-play"></i>
+                        </a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-3">
+                        <i class="fas fa-lightbulb fa-2x text-muted mb-2"></i>
+                        <p class="text-muted">Solve more problems to get personalized recommendations!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Add some interactive animations
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animate stats cards on page load
+        const statsCards = document.querySelectorAll('.stats-card');
+        statsCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.transition = 'all 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+        
+        // Add click animations to quick actions
+        const quickActions = document.querySelectorAll('.quick-action');
+        quickActions.forEach(action => {
+            action.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'translateY(-2px)';
+                }, 150);
+            });
+        });
+    });
+</script>
+{% endblock %}
