@@ -1,144 +1,100 @@
-# Online-Judge-Project
-Python Django Based project
+# Code Matrix
 
-## Features
+**Code Matrix** is a modern, AI-powered online judge platform built with Python and Django. It's designed for competitive programming enthusiasts to practice problem-solving, test their coding skills, and get intelligent feedback on their solutions.
 
-- User registration and authentication
-- Problem browsing and management
-- Code submission and automatic judging
-- Multi-language support (Python, C++, C, Java)
-- Real-time verdict updates
-- User statistics and leaderboards
-- Responsive web interface
+## ✨ Key Features
 
-## Supported Languages
+- **User Authentication**: Secure registration and login system.
+- **Problem Library**: Browse, filter, and solve a wide range of coding challenges.
+- **Multi-Language Support**: Submit solutions in Python, C++, C, and Java.
+- **Instant Judging**: Get real-time verdicts on your submissions (Accepted, Wrong Answer, TLE, etc.).
+- **AI-Powered Assistant (New!)**:
+    - **Get Hints**: Stuck on a problem? The AI can provide a helpful hint to guide you.
+    - **Analyze Failures**: If your code fails, the AI can analyze your solution against failed test cases and suggest fixes.
+    - **Powered by Gemini**: Utilizes Google's powerful Gemini AI for high-quality assistance.
+- **Personalized Dashboard**: Track your progress, view submission history, and see performance stats.
+- **Responsive UI**: A clean, modern, and mobile-friendly interface.
 
-- Python 3
-- C++ (g++)
-- C (gcc)
-- Java (javac/java)
+## 🚀 Quick Setup
 
-## Quick Setup
+### 1. Prerequisites
+- Python 3.8+
+- Git
 
-### 1. Install Python
-Make sure you have Python 3.8+ installed on your system.
-
-### 2. Install Dependencies
+### 2. Clone & Setup
 ```bash
+# Clone the repository
+git clone https://github.com/your-username/Code-Matrix.git
+cd Code-Matrix
+
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 3. Setup Database
+### 3. Environment Variables
+Create a `.env` file in the root directory and add your Gemini API key:
+```
+GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+### 4. Database Migration
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
-### 4. Create Superuser (Admin)
+### 5. Create Superuser
 ```bash
 python manage.py createsuperuser
 ```
 
-### 5. Run Development Server
+### 6. Run the Server
 ```bash
 python manage.py runserver
 ```
+The platform will be available at `http://127.0.0.1:8000`.
 
-Visit `http://127.0.0.1:8000` to access the platform.
+## 🤖 AI Assistant Integration
 
-## Project Structure
+The AI features are powered by Google's Gemini. To use them, you need a Gemini API key with access to the "Gemini 1.5 Flash" model.
+
+- **Hint Generation**: On any problem page, click "Get AI Hint" for a nudge in the right direction.
+- **Failure Analysis**: After a submission fails, you'll have an option to let the AI analyze your code and explain what went wrong.
+
+## 📂 Project Structure
 
 ```
-online_judge/
+Code-Matrix/
 ├── manage.py
 ├── requirements.txt
-├── online_judge/          # Main project settings
-│   ├── settings.py
-│   ├── urls.py
-│   └── wsgi.py
-├── judge/                 # Main app with dashboard
-├── problems/              # Problem management
-├── submissions/           # Code execution and judging
-├── accounts/              # User management
-├── templates/             # HTML templates
-└── static/               # CSS, JS, images
+├── .env                 # For API keys
+├── online_judge/        # Main Django project
+├── judge/               # Core app for dashboard and judging
+├── problems/            # Problem management
+├── submissions/         # Submission handling
+├── accounts/            # User authentication
+├── ai_assistant/        # Gemini AI integration
+├── templates/           # HTML files
+└── static/              # CSS, JS, images
 ```
 
-## Admin Panel
+## 🛠️ Admin Panel
 
 Access the admin panel at `http://127.0.0.1:8000/admin/` to:
-- Add new problems
-- Manage test cases
-- View submissions
+- Manage problems and test cases
+- View all submissions
 - Manage users
 
-## Adding Problems
+## 🤝 Contributing
 
-1. Go to the admin panel
-2. Add a new Problem with:
-   - Title and description
-   - Time limit (seconds)
-   - Memory limit (MB)
-   - Difficulty level
-3. Add test cases for the problem:
-   - Input data
-   - Expected output
+Contributions are welcome! To contribute:
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/YourFeature`).
+3. Make your changes.
+4. Commit your changes (`git commit -m 'Add some feature'`).
+5. Push to the branch (`git push origin feature/YourFeature`).
+6. Open a pull request.
 
-## System Requirements
-
-- Python 3.8+
-- GCC compiler (for C/C++)
-- Java JDK (for Java support)
-- At least 1GB RAM
-- 5GB disk space
-
-## Security Notes
-
-- Code execution is sandboxed with time and memory limits
-- User code runs in isolated processes
-- File system access is restricted
-
-## Development
-
-To contribute or modify:
-
-1. Fork the repository
-2. Create a virtual environment
-3. Install dependencies
-4. Make changes
-5. Test thoroughly
-6. Submit pull request
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Database errors**: Run `python manage.py migrate`
-2. **Static files not loading**: Run `python manage.py collectstatic`
-3. **Compiler not found**: Install GCC and Java JDK
-4. **Permission errors**: Check file permissions
-
-### Debug Mode
-
-To enable debug mode, set `DEBUG = True` in `settings.py`. 
-**Never use debug mode in production!**
-
-## License
+## 📜 License
 
 This project is open source and available under the MIT License.
-
-## Support
-
-For issues and questions:
-1. Check the troubleshooting section
-2. Review the code documentation
-3. Create an issue with detailed information
-
-## Future Enhancements
-
-- Contest management
-- Advanced statistics
-- Plagiarism detection
-- Docker integration
-- API endpoints
-- Mobile app support

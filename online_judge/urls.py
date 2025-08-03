@@ -24,6 +24,7 @@ urlpatterns = [
     path('problems/', include('problems.urls')),
     path('submissions/', include('submissions.urls')),
     path('accounts/', include('accounts.urls')),
+    path('ai/', include('ai_assistant.urls')),
 ]
 
 if settings.DEBUG:

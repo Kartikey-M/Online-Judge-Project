@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,6 +48,7 @@ INSTALLED_APPS = [
     'problems',
     'submissions',
     'accounts',
+    'ai_assistant',
 ]
 
 MIDDLEWARE = [
@@ -152,3 +157,8 @@ TEMP_CODE_DIR = BASE_DIR / 'temp_code'
 
 # Create temp directory if it doesn't exist
 os.makedirs(TEMP_CODE_DIR, exist_ok=True)
+
+# Gemini AI Configuration
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+if not GEMINI_API_KEY:
+    raise ValueError("GEMINI_API_KEY environment variable is required")

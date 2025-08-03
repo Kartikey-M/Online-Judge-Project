@@ -1,7 +1,7 @@
 ﻿{% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ problem.title }} - Online Judge{% endblock %}
+{% block title %}{{ problem.title }} - Code Matrix{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -232,6 +232,7 @@
 {% endblock %}
 
 {% block content %}
+{% csrf_token %}
 <div class="container-fluid">
     <!-- Problem Header -->
     <div class="problem-header text-center">
@@ -317,6 +318,35 @@
                 </div>
             </div>
             {% endfor %}
+            {% endif %}
+
+            <!-- AI Assistant Section -->
+            {% if user.is_authenticated %}
+            <div class="problem-section">
+                <div class="section-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-robot"></i> AI Assistant
+                    </h6>
+                </div>
+                <div class="section-content">
+                    <p class="text-muted mb-3">
+                        <small>Need help? Get an AI-powered hint to guide you toward the solution!</small>
+                    </p>
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-outline-info" id="get-hint-btn">
+                            <i class="fas fa-lightbulb"></i> Get AI Hint
+                        </button>
+                    </div>
+                    <div id="ai-hint-container" style="display: none;" class="mt-3">
+                        <div class="alert alert-info border-info" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%); border: 2px solid #17a2b8; box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);">
+                            <h5 class="mb-3" style="color: white; font-weight: bold;">
+                                <i class="fas fa-robot me-2"></i> AI Hint
+                            </h5>
+                            <div id="ai-hint-content" style="color: white; font-size: 1.1rem; line-height: 1.6; padding: 10px; background: rgba(255,255,255,0.1); border-radius: 8px; border-left: 4px solid #fff;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
             {% endif %}
         </div>
 
@@ -693,6 +723,63 @@ int main() {
             });
         });
     }
+
+    // AI Hint button
+    const getHintBtn = document.getElementById('get-hint-btn');
+    
+    if (getHintBtn) {
+        getHintBtn.addEventListener('click', function() {
+            // Get CSRF token
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+            if (!csrfToken) {
+                alert('CSRF token not found. Please refresh the page.');
+                return;
+            }
+
+            // Check if required elements exist
+            const hintContent = document.getElementById('ai-hint-content');
+            const hintContainer = document.getElementById('ai-hint-container');
+            
+            if (!hintContent || !hintContainer) {
+                alert('AI hint elements not found. Please refresh the page.');
+                return;
+            }
+            
+            getHintBtn.disabled = true;
+            getHintBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Getting Hint...';
+            
+            fetch(`{% url 'ai_assistant:problem_hint' problem.id %}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken.value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    hintContent.innerHTML = data.hint;
+                    hintContainer.style.display = 'block';
+                    
+                    // Ensure the hint stays visible and scroll to it
+                    hintContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    getHintBtn.innerHTML = '<i class="fas fa-lightbulb"></i> Get Another Hint';
+                } else {
+                    alert('Error: ' + (data.error || 'Unable to get hint'));
+                    getHintBtn.innerHTML = '<i class="fas fa-lightbulb"></i> Get AI Hint';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error getting hint: ' + error);
+                getHintBtn.innerHTML = '<i class="fas fa-lightbulb"></i> Get AI Hint';
+            })
+            .finally(() => {
+                getHintBtn.disabled = false;
+            });
+        });
+    }
 });
 
 function displayTestResults(data) {
@@ -703,9 +790,15 @@ function displayTestResults(data) {
     }
     
     let html = '';
+    let hasFailures = false;
+    
     data.results.forEach((result, index) => {
         const statusClass = result.passed ? 'test-status-pass' : 'test-status-fail';
         const statusText = result.passed ? 'PASSED' : 'FAILED';
+        
+        if (!result.passed) {
+            hasFailures = true;
+        }
         
         html += `
             <div class="test-result-item">
@@ -733,7 +826,103 @@ function displayTestResults(data) {
             </div>`;
     });
     
+    // Add AI Analysis button if there are failures
+    if (hasFailures) {
+        html += `
+            <div class="mt-3 p-3" style="background: #21262d; border-radius: 8px; border: 1px solid #30363d;">
+                <h6><i class="fas fa-robot"></i> Need Help Debugging?</h6>
+                <p class="text-muted mb-3">Let AI analyze your failed test cases and provide debugging suggestions.</p>
+                <button type="button" class="btn btn-outline-warning" id="analyze-test-failures-btn">
+                    <i class="fas fa-search"></i> Analyze Test Failures with AI
+                </button>
+                <div id="test-analysis-container" style="display: none;" class="mt-3">
+                    <div class="alert alert-warning border-warning" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); border: 2px solid #ffc107; box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);">
+                        <h6 class="mb-3" style="color: #212529; font-weight: bold;">
+                            <i class="fas fa-robot me-2"></i> AI Analysis
+                        </h6>
+                        <div id="test-analysis-content" style="color: #212529; font-size: 1.1rem; line-height: 1.6; padding: 10px; background: rgba(0,0,0,0.1); border-radius: 8px; border-left: 4px solid #212529;"></div>
+                    </div>
+                </div>
+            </div>`;
+    }
+    
     container.innerHTML = html;
+    
+    // Add event listener for AI analysis button
+    if (hasFailures) {
+        const analyzeBtn = document.getElementById('analyze-test-failures-btn');
+        if (analyzeBtn) {
+            analyzeBtn.addEventListener('click', function() {
+                analyzeTestFailures(data);
+            });
+        }
+    }
+}
+
+function analyzeTestFailures(testData) {
+    const analyzeBtn = document.getElementById('analyze-test-failures-btn');
+    const analysisContent = document.getElementById('test-analysis-content');
+    const analysisContainer = document.getElementById('test-analysis-container');
+    
+    if (!analyzeBtn || !analysisContent || !analysisContainer) return;
+    
+    analyzeBtn.disabled = true;
+    analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+    
+    // Get current code and language
+    const language = document.querySelector('#id_language').value;
+    const sourceCode = editor ? editor.getValue() : document.querySelector('#id_source_code').value;
+    
+    // Get CSRF token
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (!csrfToken) {
+        alert('CSRF token not found. Please refresh the page.');
+        analyzeBtn.disabled = false;
+        analyzeBtn.innerHTML = '<i class="fas fa-search"></i> Analyze Test Failures with AI';
+        return;
+    }
+    
+    // Prepare failed test cases info
+    const failedCases = testData.results.filter(result => !result.passed);
+    const testCasesInfo = failedCases.map((result, index) => ({
+        input: result.input,
+        expected: result.expected,
+        actual: result.output || result.error
+    }));
+    
+    fetch('/ai/analyze-test-failures/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken.value
+        },
+        body: JSON.stringify({
+            problem_id: {{ problem.id }},
+            language: language,
+            source_code: sourceCode,
+            failed_test_cases: testCasesInfo
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            analysisContent.innerHTML = data.analysis;
+            analysisContainer.style.display = 'block';
+            analysisContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            analyzeBtn.innerHTML = '<i class="fas fa-search"></i> Get Another Analysis';
+        } else {
+            alert('Error: ' + (data.error || 'Unable to analyze test failures'));
+            analyzeBtn.innerHTML = '<i class="fas fa-search"></i> Analyze Test Failures with AI';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error analyzing test failures: ' + error);
+        analyzeBtn.innerHTML = '<i class="fas fa-search"></i> Analyze Test Failures with AI';
+    })
+    .finally(() => {
+        analyzeBtn.disabled = false;
+    });
 }
 
 function displayCompilerResults(data) {
