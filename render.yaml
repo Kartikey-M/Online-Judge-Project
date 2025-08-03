@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: code-matrix
+    runtime: python3
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn online_judge.wsgi:application"
+    plan: free
+    autoDeploy: false
+    envVars:
+      - key: DEBUG
+        value: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: PYTHON_VERSION
+        value: 3.11.4
+
+databases:
+  - name: code-matrix-db
+    databaseName: code_matrix
+    user: code_matrix_user
+    plan: free
