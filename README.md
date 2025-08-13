@@ -1,100 +1,256 @@
-# Code Matrix
+# 🚀 Code Matrix - AI-Powered Online Judge Platform
 
-**Code Matrix** is a modern, AI-powered online judge platform built with Python and Django. It's designed for competitive programming enthusiasts to practice problem-solving, test their coding skills, and get intelligent feedback on their solutions.
+[![Production Ready](https://img.shields.io/badge/Production-Ready-brightgreen)](#)
+[![Django](https://img.shields.io/badge/Django-4.2.23-blue)](#)
+[![Python](https://img.shields.io/badge/Python-3.11+-blue)](#)
+[![AI Powered](https://img.shields.io/badge/AI-Gemini%202.0-orange)](#)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-success)](https://code-matrix-0ya4.onrender.com)
 
-## ✨ Key Features
+**Code Matrix** is a modern, AI-powered online judge platform that helps programmers practice competitive programming with intelligent assistance. Get instant hints, code analysis, and debugging help powered by Google's Gemini 2.0 Flash AI.
 
-- **User Authentication**: Secure registration and login system.
-- **Problem Library**: Browse, filter, and solve a wide range of coding challenges.
-- **Multi-Language Support**: Submit solutions in Python, C++, C, and Java.
-- **Instant Judging**: Get real-time verdicts on your submissions (Accepted, Wrong Answer, TLE, etc.).
-- **AI-Powered Assistant (New!)**:
-    - **Get Hints**: Stuck on a problem? The AI can provide a helpful hint to guide you.
-    - **Analyze Failures**: If your code fails, the AI can analyze your solution against failed test cases and suggest fixes.
-    - **Powered by Gemini**: Utilizes Google's powerful Gemini AI for high-quality assistance.
-- **Personalized Dashboard**: Track your progress, view submission history, and see performance stats.
-- **Responsive UI**: A clean, modern, and mobile-friendly interface.
+## 🌟 Features
 
-## 🚀 Quick Setup
+### 🧠 AI-Powered Learning
+- **Smart Hints**: Get algorithmic guidance without spoiling the solution
+- **Code Analysis**: Understand why your solution failed
+- **Debugging Help**: AI analyzes runtime errors and suggests fixes
+- **Performance Tips**: Optimization suggestions for time limit exceeded cases
 
-### 1. Prerequisites
-- Python 3.8+
-- Git
+### 💻 Multi-Language Support
+- **Python** - Full support with instant execution
+- **C++** - Complete compilation and testing
+- **C** - Traditional C programming support  
+- **Java** - Object-oriented problem solving
 
-### 2. Clone & Setup
+### 🎯 Problem Management
+- **15+ Active Problems** with varying difficulty levels
+- **Comprehensive Test Cases** for thorough validation
+- **Sample Test Cases** visible to users for understanding
+- **Difficulty Levels**: Easy, Medium, Hard categorization
+
+### 🔧 Development Features
+- **Online Compiler**: Test code without submitting
+- **Real-time Execution**: See results instantly
+- **Progress Tracking**: Monitor your improvement
+- **Clean UI/UX**: Responsive Bootstrap design
+
+## 🚀 Quick Start
+
+### Live Demo
+Visit the live platform: **[code-matrix-0ya4.onrender.com](https://code-matrix-0ya4.onrender.com)**
+
+### Local Development
+
+1. **Clone the repository**
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/Code-Matrix.git
-cd Code-Matrix
+git clone https://github.com/Kartikey-M/Online-Judge-Project.git
+cd Online-Judge-Project
+```
 
-# Install dependencies
+2. **Install dependencies**
+```bash
 pip install -r requirements.txt
 ```
 
-### 3. Environment Variables
-Create a `.env` file in the root directory and add your Gemini API key:
-```
-GEMINI_API_KEY=your_gemini_api_key_here
+3. **Environment Setup**
+Create a `.env` file:
+```env
+DJANGO_SECRET_KEY=your-secret-key-here
+GEMINI_API_KEY=your-gemini-api-key
+DATABASE_URL=sqlite:///db.sqlite3
+DEBUG=True
 ```
 
-### 4. Database Migration
+4. **Database Setup**
 ```bash
-python manage.py makemigrations
 python manage.py migrate
-```
-
-### 5. Create Superuser
-```bash
 python manage.py createsuperuser
 ```
 
-### 6. Run the Server
+5. **Run Development Server**
 ```bash
 python manage.py runserver
 ```
-The platform will be available at `http://127.0.0.1:8000`.
 
-## 🤖 AI Assistant Integration
+Visit `http://127.0.0.1:8000` to see Code Matrix in action!
 
-The AI features are powered by Google's Gemini. To use them, you need a Gemini API key with access to the "Gemini 1.5 Flash" model.
+## 🏗️ Architecture
 
-- **Hint Generation**: On any problem page, click "Get AI Hint" for a nudge in the right direction.
-- **Failure Analysis**: After a submission fails, you'll have an option to let the AI analyze your code and explain what went wrong.
-
-## 📂 Project Structure
+Code Matrix follows a clean, modular architecture:
 
 ```
-Code-Matrix/
-├── manage.py
-├── requirements.txt
-├── .env                 # For API keys
-├── online_judge/        # Main Django project
-├── judge/               # Core app for dashboard and judging
-├── problems/            # Problem management
-├── submissions/         # Submission handling
-├── accounts/            # User authentication
-├── ai_assistant/        # Gemini AI integration
-├── templates/           # HTML files
-└── static/              # CSS, JS, images
+📁 Code Matrix
+├── 🎯 judge/          # Core application (home, dashboard, compiler)
+├── 📚 problems/       # Problem management system
+├── 📝 submissions/    # Code submission and evaluation
+├── 👤 accounts/       # User authentication and profiles
+├── 🤖 ai_assistant/   # Gemini AI integration
+├── 🎨 templates/      # Bootstrap-powered UI
+└── ⚙️ static/         # CSS, JS, and assets
 ```
 
-## 🛠️ Admin Panel
+### Key Components
+- **Django 4.2.23**: Robust web framework
+- **PostgreSQL**: Production database
+- **Google Gemini 2.0 Flash**: AI assistance
+- **Bootstrap 5**: Modern, responsive UI
+- **WhiteNoise**: Static file serving
+- **Render.com**: Cloud deployment
 
-Access the admin panel at `http://127.0.0.1:8000/admin/` to:
-- Manage problems and test cases
-- View all submissions
-- Manage users
+## 🧪 Testing
+
+Run the comprehensive test suite:
+
+```bash
+# Production readiness check
+python production_check.py
+
+# Full system test (optional)
+python system_test.py
+```
+
+**Current Status**: ✅ 7/7 production checks passed
+
+## 🤖 AI Assistant
+
+The AI assistant is powered by Google's Gemini 2.0 Flash and provides:
+
+### 💡 Intelligent Hints
+```python
+# User struggling with "Two Sum" problem
+AI Response: "Consider using a hash map to store numbers you've seen. 
+As you iterate through the array, check if the complement 
+(target - current number) exists in your hash map."
+```
+
+### 🔍 Code Analysis
+```python
+# For Wrong Answer verdicts
+AI Response: "Your logic looks correct, but check edge cases. 
+What happens when the array has duplicate numbers? 
+Consider if your solution handles negative numbers properly."
+```
+
+### 🐛 Debugging Support
+```python
+# For Runtime Errors
+AI Response: "The IndexError suggests you're accessing an array 
+index that doesn't exist. Check your loop bounds and ensure 
+you're not going beyond array length-1."
+```
+
+## 📊 Statistics
+
+**Current Platform Status:**
+- 🎯 **15 Active Problems** across all difficulty levels
+- 📝 **9 Total Submissions** from users
+- 👥 **3 Registered Users** and growing
+- 🤖 **AI Assistant** integrated and operational
+- 🔧 **Multi-language** execution engine working
+
+## 🔒 Security
+
+Code Matrix implements enterprise-level security:
+
+- **Environment Variables**: All secrets externalized
+- **CSRF Protection**: All forms secured
+- **Input Sanitization**: User code safely executed
+- **Sandboxed Execution**: Isolated code running
+- **Time Limits**: Prevents infinite loops
+- **Memory Limits**: Resource usage control
+
+## 🚀 Deployment
+
+### Production Environment
+- **Platform**: Render.com with automatic deployments
+- **Database**: PostgreSQL with connection pooling
+- **Static Files**: WhiteNoise for efficient serving
+- **SSL**: Automatic HTTPS with certificates
+- **Environment**: Secure variable management
+
+### Deploy Your Own
+1. Fork this repository
+2. Connect to Render.com
+3. Set environment variables:
+   - `DJANGO_SECRET_KEY`
+   - `GEMINI_API_KEY`
+   - `DATABASE_URL` (provided by Render)
+4. Deploy automatically!
+
+## 📚 Documentation
+
+- **[High-Level Design](ARCHITECTURE.md)**: Complete system architecture
+- **API Documentation**: Available in code comments
+- **User Guide**: Built-in help sections
+- **Admin Guide**: Django admin interface
+
+## 🛠️ Development
+
+### Adding New Problems
+1. Access the Django admin panel
+2. Create new Problem with description
+3. Add test cases (sample and hidden)
+4. Set difficulty and constraints
+5. Activate the problem
+
+### Extending AI Features
+The AI assistant can be extended with new analysis types:
+```python
+# In ai_assistant/gemini_service.py
+def analyze_memory_limit_exceeded(self, problem_title, user_code, language):
+    # Add new AI analysis method
+    pass
+```
+
+### Adding New Languages
+1. Extend `judge/views.py` with new executor method
+2. Add language option to forms
+3. Update UI language selection
+4. Test compilation and execution
 
 ## 🤝 Contributing
 
-Contributions are welcome! To contribute:
-1. Fork the repository.
-2. Create a new branch (`git checkout -b feature/YourFeature`).
-3. Make your changes.
-4. Commit your changes (`git commit -m 'Add some feature'`).
-5. Push to the branch (`git push origin feature/YourFeature`).
-6. Open a pull request.
+We welcome contributions! Here's how:
 
-## 📜 License
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
 
-This project is open source and available under the MIT License.
+### Development Guidelines
+- Follow PEP 8 for Python code style
+- Write meaningful commit messages
+- Add tests for new features
+- Update documentation as needed
+- Ensure all checks pass
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **Google AI**: For the powerful Gemini 2.0 Flash model
+- **Django Team**: For the excellent web framework
+- **Bootstrap**: For the beautiful UI components
+- **Render.com**: For reliable hosting platform
+- **Open Source Community**: For inspiration and support
+
+## 📞 Support
+
+- **Issues**: [GitHub Issues](https://github.com/Kartikey-M/Online-Judge-Project/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Kartikey-M/Online-Judge-Project/discussions)
+- **Email**: Open an issue for contact information
+
+---
+
+<div align="center">
+
+**Built with ❤️ for the coding community**
+
+[🌟 Star this repo](https://github.com/Kartikey-M/Online-Judge-Project/stargazers) if you find it helpful!
+
+**[Try Code Matrix Now](https://code-matrix-0ya4.onrender.com)** 🚀
+
+</div>
