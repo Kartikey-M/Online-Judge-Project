@@ -27,4 +27,9 @@ else
     echo "Superuser environment variables not set. Skipping superuser creation."
 fi
 
+# Populate database with sample problems
+echo "Populating database with sample problems..."
+python manage.py populate_problems
+echo "Sample problems added successfully!"
+
 echo "Build completed successfully!"
