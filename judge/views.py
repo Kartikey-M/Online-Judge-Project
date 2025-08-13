@@ -38,9 +38,12 @@ def home(request):
     recent_problems = Problem.objects.filter(is_active=True).order_by('-created_at')[:5]
     
     # Platform statistics
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    
     total_problems = Problem.objects.filter(is_active=True).count()
     total_submissions = Submission.objects.count()
-    total_users = 0  # Will be updated when we add user count
+    total_users = User.objects.filter(is_active=True).count()  # Count active users
     
     context = {
         'recent_problems': recent_problems,
