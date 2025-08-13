@@ -38,6 +38,8 @@ if not DEBUG:
     # Allow Render.com domain
     ALLOWED_HOSTS.extend([
         '.onrender.com',
+        'codematrix.onrender.com',  # Add your desired subdomain
+        'code-matrix-0ya4.onrender.com',  # Keep the current one during transition
         os.getenv('RENDER_EXTERNAL_HOSTNAME', '')
     ])
     # Remove empty strings

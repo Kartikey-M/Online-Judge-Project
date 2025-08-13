@@ -36,8 +36,17 @@ def safe_delete(filepath, max_retries=3, delay=0.1):
 def home(request):
     """Home page view"""
     recent_problems = Problem.objects.filter(is_active=True).order_by('-created_at')[:5]
+    
+    # Platform statistics
+    total_problems = Problem.objects.filter(is_active=True).count()
+    total_submissions = Submission.objects.count()
+    total_users = 0  # Will be updated when we add user count
+    
     context = {
         'recent_problems': recent_problems,
+        'total_problems': total_problems,
+        'total_submissions': total_submissions,
+        'total_users': total_users,
     }
     
     if request.user.is_authenticated:
