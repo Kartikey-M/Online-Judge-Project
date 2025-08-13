@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=False
+      - DATABASE_URL=postgresql://codematrix:codematrix@db:5432/codematrix
+      - DJANGO_SECRET_KEY=your-secret-key-change-in-production
+      - GEMINI_API_KEY=your-gemini-api-key
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./:/app
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py populate_problems &&
+             gunicorn --bind 0.0.0.0:8000 --workers 3 online_judge.wsgi:application"
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=codematrix
+      - POSTGRES_USER=codematrix
+      - POSTGRES_PASSWORD=codematrix
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./static:/app/static
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
+  redis_data:
