@@ -42,6 +42,9 @@ def problem_detail(request, slug):
     """Problem detail view with submission form"""
     problem = get_object_or_404(Problem, slug=slug, is_active=True)
     
+    # Get sample test cases (visible to users)
+    sample_cases = problem.test_cases.filter(is_sample=True).order_by('id')
+    
     # Get user's previous submissions for this problem
     user_submissions = []
     if request.user.is_authenticated:
@@ -52,6 +55,7 @@ def problem_detail(request, slug):
     
     context = {
         'problem': problem,
+        'sample_cases': sample_cases,
         'user_submissions': user_submissions,
         'submission_form': SubmissionForm(),
     }
@@ -76,6 +80,10 @@ def submit_solution(request, slug):
         else:
             # Form is invalid, re-render the page with the form containing errors
             messages.error(request, 'Please correct the errors below.')
+            
+            # Get sample test cases for re-rendering
+            sample_cases = problem.test_cases.filter(is_sample=True).order_by('id')
+            
             user_submissions = []
             if request.user.is_authenticated:
                 user_submissions = Submission.objects.filter(
@@ -85,6 +93,7 @@ def submit_solution(request, slug):
             
             context = {
                 'problem': problem,
+                'sample_cases': sample_cases,
                 'user_submissions': user_submissions,
                 'submission_form': form,  # Pass the invalid form back to the template
             }
